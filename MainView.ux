@@ -1,0 +1,22 @@
+<App>
+	 <ClientPanel>
+        <JavaScript>
+            var ShareSheet = require("ShareSheet");
+			var myTweet = {
+				text: "This is a tweet from a Fuse app :D",
+				// url : "https://www.fusetools.com",
+				via : "fusetools"
+			}
+
+            function byTwitter() {
+                ShareSheet.byTwitter(myTweet);
+            }
+
+            module.exports = {
+                byTwitter: byTwitter
+            };
+        </JavaScript>
+
+        <Button Text="Tweet" Clicked="{byTwitter}" />
+    </ClientPanel>
+</App>
