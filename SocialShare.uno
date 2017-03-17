@@ -4,6 +4,9 @@ using Fuse;
 using Uno.UX;
 using Uno;
 
+[Require("Gradle.Dependency","compile('com.facebook.android:facebook-android-sdk:4.8.+') { exclude module: 'support-v4' }")]
+[Require("Gradle.Repository","mavenCentral()")]
+
 [ForeignInclude(Language.Java, "android.content.pm.ResolveInfo")]
 [ForeignInclude(Language.Java, "android.content.Intent")]
 [ForeignInclude(Language.Java, "com.fuse.Activity")]
@@ -12,6 +15,9 @@ using Uno;
 [ForeignInclude(Language.Java, "android.net.Uri")]
 [ForeignInclude(Language.Java, "java.net.URLEncoder")]
 [ForeignInclude(Language.Java, "java.io.UnsupportedEncodingException")]
+[ForeignInclude(Language.Java, "com.facebook.share.widget.ShareDialog")]
+[ForeignInclude(Language.Java, "com.facebook.share.model.ShareLinkContent")]
+[ForeignInclude(Language.Java, "com.facebook.*")]
 
 [UXGlobalModule]
 public class SocialShare : NativeModule
@@ -26,6 +32,10 @@ public class SocialShare : NativeModule
         _instance = this;
         Resource.SetGlobalKey(_instance, "SocialShare");
         AddMember(new NativeFunction("byTwitter", (NativeCallback)byTwitter));
+        AddMember(new NativeFunction("byFacebook", (NativeCallback)byFacebook));
+
+        if defined(Android)
+            sdkInitialize();
     }
 
     /*===========================================*
@@ -71,7 +81,7 @@ public class SocialShare : NativeModule
     public static extern(Android) void twitterShare(string message, string via, string url)
     @{
         String tweetUrl = "https://twitter.com/intent/tweet?text=" +
-                            @{SocialShare.urlEncode(string):Call(message)}
+                            @{SocialShare.urlEncode(string):Call(message)};
 
         if(via != null) {
             tweetUrl += "&via=" + @{SocialShare.urlEncode(string):Call(via)};
@@ -116,4 +126,43 @@ public class SocialShare : NativeModule
     /*===========================================*
                     F A C E B O O K
      *===========================================*/
+     [Foreign(Language.Java)]
+     extern(Android) void sdkInitialize()
+     @{
+         FacebookSdk.sdkInitialize(Activity.getRootActivity());
+     @}
+
+     /**
+     * Use Tweet Web Intent to share
+     * https://dev.twitter.com/web/tweet-button/web-intent
+     **/
+     internal static object byFacebook(Context c, object[] args)
+     {
+         var wrapperObject = c.ObjectCreate(args);
+         facebookShare(wrapperObject["text"] as string,
+                      wrapperObject["imageUrl"] as string,
+                      wrapperObject["url"] as string);
+
+         return null;
+     }
+
+     public static extern(!MOBILE) void facebookShare(string message, string url)
+     {
+         debug_log "Try on mobile :)";
+     }
+
+     [Foreign(Language.Java)]
+     public static extern(Android) void facebookShare(string message, string imageUrl, string url)
+     @{
+        ShareLinkContent.Builder builder = new ShareLinkContent.Builder();
+
+        if(message != null)
+            builder.setContentDescription(message);
+        if(imageUrl != null)
+            builder.setImageUrl(Uri.parse(imageUrl));
+        if(url != null)
+            builder.setContentUrl(Uri.parse(url));
+
+        ShareDialog.show(Activity.getRootActivity(),  builder.build());
+     @}
 }
