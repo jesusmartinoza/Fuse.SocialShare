@@ -2,6 +2,7 @@ using Fuse.Scripting;
 using Uno.Compiler.ExportTargetInterop;
 using Fuse;
 using Uno.UX;
+using Uno;
 
 [ForeignInclude(Language.Java, "android.content.pm.ResolveInfo")]
 [ForeignInclude(Language.Java, "android.content.Intent")]
@@ -13,17 +14,17 @@ using Uno.UX;
 [ForeignInclude(Language.Java, "java.io.UnsupportedEncodingException")]
 
 [UXGlobalModule]
-public class ShareSheet : NativeModule
+public class SocialShare : NativeModule
 {
-    static readonly ShareSheet _instance;
+    static readonly SocialShare _instance;
 
-    public ShareSheet()
+    public SocialShare()
     {
         if(_instance != null)
             return;
 
         _instance = this;
-        Resource.SetGlobalKey(_instance, "ShareSheet");
+        Resource.SetGlobalKey(_instance, "SocialShare");
         AddMember(new NativeFunction("byTwitter", (NativeCallback)byTwitter));
     }
 
@@ -36,11 +37,10 @@ public class ShareSheet : NativeModule
     **/
     internal static object byTwitter(Context c, object[] args)
     {
-        if(!defined(mobile))
-            throw new Exception("ShareSheet is only available in mobile");
-
         var wrapperObject = c.ObjectCreate(args);
-        twitterShare(wrapperObject["text"] as string, wrapperObject["via"] as string, wrapperObject["url"] as string);
+        twitterShare(wrapperObject["text"] as string,
+                     wrapperObject["via"] as string,
+                     wrapperObject["url"] as string);
 
         return null;
     }
@@ -59,22 +59,26 @@ public class ShareSheet : NativeModule
         }
     @}
 
+    public static extern(!MOBILE)  void twitterShare(string message, string via, string url)
+    {
+        debug_log "Try on mobile :)";
+    }
+
     /**
     * Android native implementation
     **/
     [Foreign(Language.Java)]
     public static extern(Android) void twitterShare(string message, string via, string url)
     @{
-        String tweetUrl = String.format("https://twitter.com/intent/tweet?text=%s",
-                @{ShareSheet.urlEncode(string):Call(message)}
-            );
+        String tweetUrl = "https://twitter.com/intent/tweet?text=" +
+                            @{SocialShare.urlEncode(string):Call(message)}
 
         if(via != null) {
-            tweetUrl += "&via=" + @{ShareSheet.urlEncode(string):Call(via)};
+            tweetUrl += "&via=" + @{SocialShare.urlEncode(string):Call(via)};
         }
 
         if(url != null) {
-            tweetUrl += "&url=" + @{ShareSheet.urlEncode(string):Call(url)};
+            tweetUrl += "&url=" + @{SocialShare.urlEncode(string):Call(url)};
         }
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
@@ -96,7 +100,17 @@ public class ShareSheet : NativeModule
     [Foreign(Language.ObjC)]
     public static extern(iOS) void twitterShare(string message, string via, string url)
     @{
+        NSString *tweetUrl = @"twitter://";
+        tweetUrl = [NSString stringWithFormat:@"post?message=%@", message];
 
+        if(via != nil)
+            tweetUrl = [NSString stringWithFormat:@"%@&via=%@", tweetUrl, via];
+
+        if(url != nil)
+            tweetUrl = [NSString stringWithFormat:@"%@&url=%@", tweetUrl, url];
+
+        tweetUrl = [tweetUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+        [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:tweetUrl]];
     @}
 
     /*===========================================*

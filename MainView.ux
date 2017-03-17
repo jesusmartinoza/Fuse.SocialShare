@@ -1,22 +1,36 @@
 <App>
-	 <ClientPanel>
-        <JavaScript>
-            var ShareSheet = require("ShareSheet");
-			var myTweet = {
-				text: "This is a tweet from a Fuse app :D",
-				// url : "https://www.fusetools.com",
-				via : "fusetools"
-			}
+	<JavaScript>
+		var SocialShare = require("SocialShare");
+		var myTweet = {
+			text: "This is a tweet from a Fuse app :D",
+			// url : "https://www.fusetools.com",
+			via : "fusetools"
+		}
 
-            function byTwitter() {
-                ShareSheet.byTwitter(myTweet);
-            }
+		function byTwitter() {
+			SocialShare.byTwitter(myTweet);
+		}
 
-            module.exports = {
-                byTwitter: byTwitter
-            };
-        </JavaScript>
+		module.exports = {
+			byTwitter: byTwitter
+		};
+	</JavaScript>
 
-        <Button Text="Tweet" Clicked="{byTwitter}" />
-    </ClientPanel>
+	<Rectangle ux:Class="SocialButton" CornerRadius="5" Width="120" Padding="10" HitTestMode="LocalBounds">
+		<string ux:Property="Text"/>
+    	<float4 ux:Property="LineColor"/>
+
+		<Text Value="{Property Text}" Alignment="Center" TextColor="{Property LineColor} + 0.2"/>
+		<Stroke Color="{Property LineColor}" Width="2"/>
+		<WhilePressed>
+			<Scale Factor="0.9" Duration="0.2" Easing="QuadraticIn"/>
+		</WhilePressed>
+	</Rectangle>
+
+	<StackPanel ContentAlignment="TopCenter" ItemSpacing="10" Background="#424242">
+		<Text Value="Native social share" FontSize="24" Alignment="Center" Margin="80" TextColor="White"/>
+		<SocialButton Text="Tweet" Clicked="{byTwitter}" LineColor="#55ACEE"/>
+		<SocialButton Text="Facebook" Clicked="{byTwitter}" LineColor="#3B5998"/>
+		<SocialButton Text="Standard" Clicked="{byTwitter}" LineColor="#FFBB3F"/>
+	</StackPanel>
 </App>
