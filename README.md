@@ -1,9 +1,16 @@
-## Fuse.SocialShare
+# Fuse.SocialShare
 Library to use social share options in [Fuse](http://www.fusetools.com/)
 
 ## Installation
-    1. Copy the SocialShare.uno, FacebookShare.uxl and FacebookAppId.uxl to your project
-    2. Change AppID in the FacebookAppId.uxl file
+#### fusepm
+[fusepm](https://github.com/bolav/fusepm) is a dependency manager for Fuse projects.
+    $ fusepm install https://github.com/jesusmartinoza/Fuse.SocialShare
+
+### Manually
+Copy the SocialShare.uno, FacebookShare.uxl and FacebookAppId.uxl to your project
+
+## Setup
+You will need to register for a Facebook App ID and fill it in as Facebook.AppID in FacebookAppId.uxl.
 
 ## Usage
 ```javascript
@@ -25,8 +32,8 @@ Library to use social share options in [Fuse](http://www.fusetools.com/)
     SocialShare.byTwitter(myTweet);
     SocialShare.byFacebook(fbPost);
 ```
-A complete more complete example in MainView.ux
+A more complete example in MainView.ux
 
 ## TODO
-    - iOS facebook share.
-    - Standard Share sheet with picture.
+* iOS facebook share.
+* Standard Share sheet with picture.
