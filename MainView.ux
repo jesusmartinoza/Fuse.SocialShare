@@ -7,7 +7,7 @@
 			via : "fusetools"
 		}
 		var fbPost = {
-			text: "This is a post  from a Fuse app :D",
+			text: "This is a post from a Fuse app :D",
 			imageUrl: "https://www.fusetools.com/assets/dist/images/frontpage/showcases@2x.png",
 			url : "https://www.fusetools.com"
 		}
