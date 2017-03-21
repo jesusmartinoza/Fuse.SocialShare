@@ -38,7 +38,7 @@
 	</Rectangle>
 
 	<StackPanel ContentAlignment="TopCenter" ItemSpacing="10" Background="#424242">
-		<Text Value="Native social share" FontSize="24" Alignment="Center" Margin="80" TextColor="White"/>
+		<Text Value="Native social share" FontSize="24" Alignment="Center" Margin="80" TextColor="White" TextWrapping="Wrap"/>
 		<SocialButton Text="Tweet" Clicked="{byTwitter}" LineColor="#55ACEE"/>
 		<SocialButton Text="Facebook" Clicked="{byFacebook}" LineColor="#3B5998"/>
 	</StackPanel>

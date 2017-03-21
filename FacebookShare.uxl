@@ -59,6 +59,9 @@
       <key>LSApplicationQueriesSchemes</key>
       <array>
         <string>fbauth2</string>
+        <string>fbapi</string>
+        <string>fbshareextension</string>
+        <string>fbapi20150629</string>
       </array>
     ]]>
   </Require>

@@ -1,12 +1,16 @@
 using Fuse.Scripting;
 using Uno.Compiler.ExportTargetInterop;
 using Fuse;
+using Fuse.Platform;
 using Uno.UX;
 using Uno;
 
+[Require("Cocoapods.Podfile.Target", "pod 'FBSDKShareKit'")]
+[extern(iOS) ForeignInclude(Language.ObjC, "FBSDKShareKit/FBSDKShareKit.h")]
+[extern(iOS) ForeignInclude(Language.ObjC, "FBSDKCoreKit/FBSDKCoreKit.h")]
+
 [Require("Gradle.Dependency","compile('com.facebook.android:facebook-android-sdk:4.8.+') { exclude module: 'support-v4' }")]
 [Require("Gradle.Repository","mavenCentral()")]
-
 [ForeignInclude(Language.Java, "android.content.pm.ResolveInfo")]
 [ForeignInclude(Language.Java, "android.content.Intent")]
 [ForeignInclude(Language.Java, "com.fuse.Activity")]
@@ -34,9 +38,22 @@ public class SocialShare : NativeModule
         AddMember(new NativeFunction("byTwitter", (NativeCallback)byTwitter));
         AddMember(new NativeFunction("byFacebook", (NativeCallback)byFacebook));
 
-        if defined(Android)
-            sdkInitialize();
+        Lifecycle.Started += Started;
     }
+
+    [Foreign(Language.ObjC)]
+	extern(iOS) void Started(ApplicationState state)
+	@{
+		[[FBSDKApplicationDelegate sharedInstance]
+			application: [UIApplication sharedApplication]
+			didFinishLaunchingWithOptions: nil];
+	@}
+
+    [Foreign(Language.Java)]
+	extern(Android) void Started(ApplicationState state)
+	@{
+		FacebookSdk.sdkInitialize(Activity.getRootActivity());
+	@}
 
     /*===========================================*
                     T W I T T E R
@@ -126,12 +143,6 @@ public class SocialShare : NativeModule
     /*===========================================*
                     F A C E B O O K
      *===========================================*/
-     [Foreign(Language.Java)]
-     extern(Android) void sdkInitialize()
-     @{
-         FacebookSdk.sdkInitialize(Activity.getRootActivity());
-     @}
-
      /**
      * Use Tweet Web Intent to share
      * https://dev.twitter.com/web/tweet-button/web-intent
@@ -146,7 +157,7 @@ public class SocialShare : NativeModule
          return null;
      }
 
-     public static extern(!MOBILE) void facebookShare(string message, string url)
+     public static extern(!MOBILE) void facebookShare(string message, string imageUrl, string url)
      {
          debug_log "Try on mobile :)";
      }
@@ -164,5 +175,24 @@ public class SocialShare : NativeModule
             builder.setContentUrl(Uri.parse(url));
 
         ShareDialog.show(Activity.getRootActivity(),  builder.build());
+     @}
+
+     [Foreign(Language.ObjC)]
+     public static extern(iOS) void facebookShare(string message, string imageUrl, string url)
+     @{
+        FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+        content.contentDescription = message;
+
+        if(url != nil)
+            content.contentURL = [NSURL URLWithString:url];
+
+        if(imageUrl != nil)
+            content.imageURL = [NSURL URLWithString:imageUrl];
+
+        FBSDKShareDialog* dialog = [[FBSDKShareDialog alloc] init];
+        dialog.shareContent = content;
+        dialog.delegate = self;
+        dialog.fromViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+        [dialog show];
      @}
 }
