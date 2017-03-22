@@ -55,6 +55,11 @@ public class SocialShare : NativeModule
 		FacebookSdk.sdkInitialize(Activity.getRootActivity());
 	@}
 
+    extern(!MOBILE) void Started(ApplicationState state)
+    {
+
+    }
+
     /*===========================================*
                     T W I T T E R
      *===========================================*/
@@ -177,7 +182,9 @@ public class SocialShare : NativeModule
         ShareDialog.show(Activity.getRootActivity(),  builder.build());
      @}
 
+
      [Foreign(Language.ObjC)]
+     @interface TakePictureTask : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
      public static extern(iOS) void facebookShare(string message, string imageUrl, string url)
      @{
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
