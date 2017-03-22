@@ -13,7 +13,7 @@ Copy the SocialShare.uno, FacebookShare.uxl and FacebookAppId.uxl to your projec
 
 ## Setup(Only Facebook share)
 You will need to register for a Facebook App ID and fill it
-in as Facebook.AppID in FacebookAppId.uxl.ga
+in as Facebook.AppID in FacebookAppId.uxl
 
 ## Usage
 ```javascript
