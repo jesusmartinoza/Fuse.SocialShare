@@ -184,7 +184,6 @@ public class SocialShare : NativeModule
 
 
      [Foreign(Language.ObjC)]
-     @interface TakePictureTask : NSObject<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
      public static extern(iOS) void facebookShare(string message, string imageUrl, string url)
      @{
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
