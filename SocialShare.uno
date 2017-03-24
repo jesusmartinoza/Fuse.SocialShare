@@ -197,7 +197,6 @@ public class SocialShare : NativeModule
 
         FBSDKShareDialog* dialog = [[FBSDKShareDialog alloc] init];
         dialog.shareContent = content;
-        dialog.delegate = self;
         dialog.fromViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
         [dialog show];
      @}
