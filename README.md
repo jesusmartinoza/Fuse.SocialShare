@@ -39,4 +39,4 @@ A detailed example in MainView.ux
 
 ## TODO
 * iOS facebook share.
-* Standard share sheet with picture.
+* ~~Standard share sheet with picture.~~ [Official support](https://www.fusetools.com/docs/fuse/share/sharemodule) by Fuse
